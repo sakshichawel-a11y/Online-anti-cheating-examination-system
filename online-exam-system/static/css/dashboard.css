@@ -1,0 +1,38 @@
+/* =========================================================
+   Part 10: Dashboard Page Stylesheet
+   ========================================================= */
+
+.student-welcome-card {
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;
+}
+
+.stat-card {
+    border: 1px solid #e2e8f0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05) !important;
+}
+
+.exam-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid #e2e8f0;
+}
+
+.exam-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.08) !important;
+}
+
+.start-exam-btn {
+    background-color: #2563eb;
+    border-color: #2563eb;
+    transition: all 0.2s ease;
+}
+
+.start-exam-btn:hover {
+    background-color: #1d4ed8;
+    border-color: #1d4ed8;
+}

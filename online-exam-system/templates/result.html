@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Examination Result - {{ attempt.exam_title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/result.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10">
+            
+            <!-- Result Summary Card -->
+            <div class="card border-0 shadow-sm rounded-3 mb-4 overflow-hidden">
+                <div class="card-header {% if is_pass %}bg-success{% else %}bg-danger{% endif %} text-white py-4 text-center">
+                    <span class="badge bg-white text-dark mb-2 px-3 py-1 fw-bold text-uppercase">Examination Result</span>
+                    <h3 class="fw-bold mb-1">{{ attempt.exam_title }}</h3>
+                    <p class="mb-0 opacity-75 small">Candidate: {{ attempt.student_name }} &bull; Completed on {{ attempt.end_time or attempt.start_time }}</p>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- Key Result Metrics (Part 18) -->
+                    <div class="row g-3 text-center mb-4">
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-light rounded-3 border">
+                                <div class="text-secondary small">Total Score</div>
+                                <div class="h3 fw-bold text-primary mb-0">{{ attempt.total_score }} / {{ attempt.total_marks }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-light rounded-3 border">
+                                <div class="text-secondary small">Percentage</div>
+                                <div class="h3 fw-bold text-dark mb-0">{{ attempt.percentage }}%</div>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-light rounded-3 border">
+                                <div class="text-secondary small">Status</div>
+                                <div>
+                                    {% if is_pass %}
+                                    <span class="badge bg-success fs-5 px-3">PASS</span>
+                                    {% else %}
+                                    <span class="badge bg-danger fs-5 px-3">FAIL</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-light rounded-3 border">
+                                <div class="text-secondary small">Warnings Logged</div>
+                                <div class="h3 fw-bold {% if attempt.warning_count > 0 %}text-warning-emphasis{% else %}text-success{% endif %} mb-0">
+                                    {{ attempt.warning_count }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Anti-Cheating Integrity Audit Log -->
+                    {% if cheating_logs %}
+                    <div class="alert alert-warning border-0 rounded-3 mb-4">
+                        <h6 class="fw-bold text-warning-emphasis d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-shield-exclamation fs-5"></i> Anti-Cheating Activity Audit Logs
+                        </h6>
+                        <ul class="mb-0 small ps-3">
+                            {% for log in cheating_logs %}
+                            <li>
+                                <strong>[{{ log.timestamp }}]</strong> {{ log.event_type }}: {{ log.description }} (Warning #{{ log.warning_number }})
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <!-- Detailed Question Breakdown -->
+                    <h5 class="fw-bold text-dark mb-3">Question-by-Question Evaluation</h5>
+                    <div class="d-flex flex-column gap-3 mb-4">
+                        {% for ans in answers %}
+                        <div class="card border rounded-3 p-3 {% if ans.is_correct %}border-success-subtle bg-success-subtle bg-opacity-10{% elif ans.selected_option is none %}border-warning-subtle bg-warning-subtle bg-opacity-10{% else %}border-danger-subtle bg-danger-subtle bg-opacity-10{% endif %}">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="fw-bold text-dark">Q{{ loop.index }}. {{ ans.question_text }}</span>
+                                <span>
+                                    {% if ans.is_correct %}
+                                    <span class="badge bg-success"><i class="bi bi-check-lg"></i> Correct (+{{ ans.marks }})</span>
+                                    {% elif ans.selected_option is none %}
+                                    <span class="badge bg-warning text-dark"><i class="bi bi-dash-circle"></i> Unanswered (0)</span>
+                                    {% else %}
+                                    <span class="badge bg-danger"><i class="bi bi-x-lg"></i> Incorrect (0)</span>
+                                    {% endif %}
+                                </span>
+                            </div>
+
+                            <div class="row g-2 small text-secondary">
+                                <div class="col-12 col-md-6">
+                                    <strong>Your Answer:</strong> 
+                                    {% if ans.selected_option %}
+                                    <span class="badge bg-light text-dark border">{{ ans.selected_option }}</span>
+                                    {% else %}
+                                    <span class="text-muted fst-italic">None selected</span>
+                                    {% endif %}
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <strong>Correct Answer:</strong> 
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle">{{ ans.correct_option }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Navigation Action Buttons -->
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                        <a href="{{ url_for('exam.dashboard') }}" class="btn btn-primary">
+                            <i class="bi bi-house me-1"></i> Back to Dashboard
+                        </a>
+                        <a href="{{ url_for('result.history') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-clock-history me-1"></i> View Full History
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

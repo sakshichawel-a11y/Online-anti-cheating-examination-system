@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Examination Instructions - {{ exam.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-9">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-header bg-primary text-white py-3 px-4 rounded-top-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4 class="fw-bold mb-1"><i class="bi bi-info-circle me-2"></i>Examination Instructions</h4>
+                            <p class="mb-0 text-white-50 small">{{ exam.title }} ({{ exam.subject }})</p>
+                        </div>
+                        <span class="badge bg-warning text-dark px-3 py-2 fw-semibold">
+                            <i class="bi bi-clock me-1"></i> {{ exam.duration_minutes }} Mins
+                        </span>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- Key Specs Grid -->
+                    <div class="row g-3 mb-4 text-center">
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-light rounded-3 border">
+                                <div class="text-muted small">Total Questions</div>
+                                <div class="h4 fw-bold text-primary mb-0">{{ exam.total_questions }}</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-light rounded-3 border">
+                                <div class="text-muted small">Exam Duration</div>
+                                <div class="h4 fw-bold text-primary mb-0">{{ exam.duration_minutes }}m</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-light rounded-3 border">
+                                <div class="text-muted small">Total Marks</div>
+                                <div class="h4 fw-bold text-primary mb-0">{{ exam.total_marks }}</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-light rounded-3 border">
+                                <div class="text-muted small">Passing Marks</div>
+                                <div class="h4 fw-bold text-success mb-0">{{ exam.passing_marks }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mandatory Rules Listed in Project Specs (Part 11) -->
+                    <h5 class="fw-bold text-dark mb-3">General Guidelines & Candidate Rules:</h5>
+                    <ul class="list-group list-group-flush mb-4 small">
+                        <li class="list-group-item px-0 py-2 d-flex align-items-center gap-2">
+                            <i class="bi bi-check-circle-fill text-success fs-6"></i>
+                            <span><strong>Read Questions Carefully:</strong> Each question contains 4 options with exactly one correct answer.</span>
+                        </li>
+                        <li class="list-group-item px-0 py-2 d-flex align-items-center gap-2">
+                            <i class="bi bi-check-circle-fill text-success fs-6"></i>
+                            <span><strong>Select The Most Appropriate Answer:</strong> You can change your choice anytime before final submission.</span>
+                        </li>
+                        <li class="list-group-item px-0 py-2 d-flex align-items-center gap-2 text-danger">
+                            <i class="bi bi-exclamation-triangle-fill text-danger fs-6"></i>
+                            <span><strong>Do Not Switch Tabs:</strong> Changing browser tabs or opening applications triggers an immediate anti-cheating warning.</span>
+                        </li>
+                        <li class="list-group-item px-0 py-2 d-flex align-items-center gap-2 text-danger">
+                            <i class="bi bi-fullscreen text-danger fs-6"></i>
+                            <span><strong>Remain in Fullscreen Mode:</strong> The test runs exclusively in locked fullscreen. Exiting generates a penalty event.</span>
+                        </li>
+                        <li class="list-group-item px-0 py-2 d-flex align-items-center gap-2">
+                            <i class="bi bi-slash-circle-fill text-danger fs-6"></i>
+                            <span><strong>Copy/Paste & Right-Click Restricted:</strong> Clipboard and context menu shortcuts are disabled during testing.</span>
+                        </li>
+                        <li class="list-group-item px-0 py-2 d-flex align-items-center gap-2">
+                            <i class="bi bi-shield-lock text-primary fs-6"></i>
+                            <span><strong>Activity Logging:</strong> Suspicious browser events are timestamped and logged directly to the server.</span>
+                        </li>
+                        <li class="list-group-item px-0 py-2 d-flex align-items-center gap-2">
+                            <i class="bi bi-arrow-repeat text-warning fs-6"></i>
+                            <span><strong>Do Not Refresh Page:</strong> Reloading may disrupt your session. The system auto-saves your progress.</span>
+                        </li>
+                        <li class="list-group-item px-0 py-2 d-flex align-items-center gap-2">
+                            <i class="bi bi-hourglass-bottom text-primary fs-6"></i>
+                            <span><strong>Auto-Submit Timer:</strong> When the countdown reaches 00:00, the test will automatically submit.</span>
+                        </li>
+                        <li class="list-group-item px-0 py-2 d-flex align-items-center gap-2">
+                            <i class="bi bi-x-circle-fill text-secondary fs-6"></i>
+                            <span><strong>Single Attempt:</strong> An examination cannot be restarted once submitted or disqualified.</span>
+                        </li>
+                    </ul>
+
+                    <!-- Acknowledgment Checkbox -->
+                    <form method="POST" action="{{ url_for('exam.start_exam', exam_id=exam.id) }}" id="startExamForm">
+                        <div class="form-check p-3 bg-light rounded-3 border mb-4">
+                            <input class="form-check-input ms-0 me-2" type="checkbox" id="agreeRules" required>
+                            <label class="form-check-label small fw-semibold text-dark" for="agreeRules">
+                                I have read and agree to all rules, understand that anti-cheating monitoring is active, and consent to enter Fullscreen mode.
+                            </label>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{{ url_for('exam.dashboard') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-1"></i> Cancel & Return
+                            </a>
+                            <button type="submit" class="btn btn-primary px-4 py-2 fw-semibold shadow-sm" id="beginExamBtn" disabled>
+                                <i class="bi bi-play-circle me-1"></i> Enter Fullscreen & Start Exam
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const agreeRules = document.getElementById('agreeRules');
+    const beginExamBtn = document.getElementById('beginExamBtn');
+    if (agreeRules && beginExamBtn) {
+        agreeRules.addEventListener('change', () => {
+            beginExamBtn.disabled = !agreeRules.checked;
+        });
+    }
+});
+</script>
+{% endblock %}

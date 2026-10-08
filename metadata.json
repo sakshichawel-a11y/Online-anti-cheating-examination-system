@@ -1,0 +1,6 @@
+{
+  "name": "Online Examination System",
+  "description": "Diploma IT Microproject: Online Examination System with Anti-Cheating Mechanism. Complete Part 0 to 10 development plan, Python/Flask/SQLite source code, and live student exam portal.",
+  "requestFramePermissions": ["fullscreen", "camera", "microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

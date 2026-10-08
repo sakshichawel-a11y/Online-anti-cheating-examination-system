@@ -1,0 +1,41 @@
+/* =========================================================
+   Part 9: Login Page Stylesheet
+   ========================================================= */
+
+.login-card {
+    border-radius: 1rem !important;
+    overflow: hidden;
+    background: #ffffff;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04) !important;
+}
+
+.login-icon-wrapper {
+    width: 72px;
+    height: 72px;
+    background-color: #eff6ff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.1);
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.15);
+    border-color: #93c5fd;
+}
+
+.login-btn {
+    background-color: #2563eb;
+    border-color: #2563eb;
+    font-size: 1rem;
+    letter-spacing: 0.3px;
+    transition: all 0.2s ease;
+}
+
+.login-btn:hover {
+    background-color: #1d4ed8;
+    border-color: #1d4ed8;
+    transform: translateY(-1px);
+}

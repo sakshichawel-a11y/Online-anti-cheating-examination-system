@@ -1,0 +1,13 @@
+/* =========================================================
+   Part 18: Result Page Stylesheet
+   ========================================================= */
+
+.badge-pass {
+    background-color: #16a34a;
+    color: white;
+}
+
+.badge-fail {
+    background-color: #dc2626;
+    color: white;
+}

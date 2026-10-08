@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Active Examination - {{ exam.title }}</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/exam.css') }}">
+</head>
+<body class="bg-light user-select-none exam-page" id="examBody">
+
+    <!-- Top Examination Bar with Sticky Timer -->
+    <header class="bg-dark text-white py-2 px-3 shadow-sm sticky-top border-bottom border-secondary">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <span class="badge bg-primary text-uppercase px-2 py-1">In Session</span>
+                <h5 class="mb-0 fw-bold text-truncate" style="max-width: 320px;">{{ exam.title }}</h5>
+            </div>
+
+            <!-- Anti-cheat indicator & Timer -->
+            <div class="d-flex align-items-center gap-3">
+                <div class="d-none d-md-flex align-items-center gap-1 text-warning small">
+                    <i class="bi bi-shield-lock-fill"></i>
+                    <span>Anti-Cheating Guard Active</span>
+                    <span class="badge bg-danger ms-1" id="warningCounterBadge">Warnings: 0/3</span>
+                </div>
+
+                <!-- Timer Badge (Part 15) -->
+                <div class="timer-box bg-danger text-white px-3 py-1 rounded-pill fw-bold d-flex align-items-center gap-2 shadow-sm" id="timerBadge">
+                    <i class="bi bi-stopwatch-fill"></i>
+                    <span id="timerDisplay">10:00</span>
+                </div>
+
+                <button type="button" class="btn btn-sm btn-outline-light" id="openSubmitModalBtn">
+                    Submit Exam
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Examination Workspace (Part 12) -->
+    <div class="container-fluid py-3">
+        <form id="examForm" method="POST" action="{{ url_for('result.submit_exam', attempt_id=attempt.id) }}">
+            <div class="row g-3">
+                
+                <!-- Left: Question Panel (Part 13 & 14) -->
+                <div class="col-12 col-lg-8 col-xl-9">
+                    <div class="card border-0 shadow-sm rounded-3 h-100">
+                        <!-- Card Header -->
+                        <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                            <span class="badge bg-light text-dark border fs-6 fw-semibold" id="questionNumberBadge">
+                                Question 1 of {{ questions|length }}
+                            </span>
+                            <span class="badge bg-primary-subtle text-primary" id="questionMarksBadge">
+                                1 Mark
+                            </span>
+                        </div>
+
+                        <!-- Card Body: Questions Container -->
+                        <div class="card-body p-4">
+                            {% for q in questions %}
+                            <div class="question-container {% if loop.first %}active-question{% else %}d-none{% endif %}" 
+                                 id="qContainer_{{ loop.index0 }}" 
+                                 data-q-index="{{ loop.index0 }}" 
+                                 data-q-id="{{ q.id }}">
+                                
+                                <h5 class="fw-bold text-dark mb-4 lh-base">
+                                    <span class="text-primary me-2">Q{{ loop.index }}.</span>{{ q.question_text }}
+                                </h5>
+
+                                <!-- MCQ Options (A, B, C, D) -->
+                                <div class="options-group d-flex flex-column gap-3 mb-4">
+                                    <label class="option-label p-3 rounded-3 border d-flex align-items-center gap-3 cursor-pointer" for="opt_{{ q.id }}_A">
+                                        <input type="radio" name="q_{{ q.id }}" id="opt_{{ q.id }}_A" value="A" class="form-check-input option-radio mt-0">
+                                        <span class="option-badge">A</span>
+                                        <span class="option-text">{{ q.option_a }}</span>
+                                    </label>
+
+                                    <label class="option-label p-3 rounded-3 border d-flex align-items-center gap-3 cursor-pointer" for="opt_{{ q.id }}_B">
+                                        <input type="radio" name="q_{{ q.id }}" id="opt_{{ q.id }}_B" value="B" class="form-check-input option-radio mt-0">
+                                        <span class="option-badge">B</span>
+                                        <span class="option-text">{{ q.option_b }}</span>
+                                    </label>
+
+                                    <label class="option-label p-3 rounded-3 border d-flex align-items-center gap-3 cursor-pointer" for="opt_{{ q.id }}_C">
+                                        <input type="radio" name="q_{{ q.id }}" id="opt_{{ q.id }}_C" value="C" class="form-check-input option-radio mt-0">
+                                        <span class="option-badge">C</span>
+                                        <span class="option-text">{{ q.option_c }}</span>
+                                    </label>
+
+                                    <label class="option-label p-3 rounded-3 border d-flex align-items-center gap-3 cursor-pointer" for="opt_{{ q.id }}_D">
+                                        <input type="radio" name="q_{{ q.id }}" id="opt_{{ q.id }}_D" value="D" class="form-check-input option-radio mt-0">
+                                        <span class="option-badge">D</span>
+                                        <span class="option-text">{{ q.option_d }}</span>
+                                    </label>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Card Footer: Action Controls (Part 13) -->
+                        <div class="card-footer bg-white border-top py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-outline-secondary" id="prevBtn" disabled>
+                                    <i class="bi bi-chevron-left me-1"></i> Previous
+                                </button>
+                                <button type="button" class="btn btn-outline-warning text-dark" id="clearBtn">
+                                    <i class="bi bi-eraser me-1"></i> Clear Response
+                                </button>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-outline-purple" id="reviewBtn" style="border-color: #7c3aed; color: #7c3aed;">
+                                    <i class="bi bi-bookmark me-1"></i> Mark Review
+                                </button>
+                                <button type="button" class="btn btn-primary px-4" id="nextBtn">
+                                    Next <i class="bi bi-chevron-right ms-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Question Palette & Anti-cheat status (Part 12 & 31) -->
+                <div class="col-12 col-lg-4 col-xl-3">
+                    <div class="card border-0 shadow-sm rounded-3">
+                        <div class="card-header bg-white border-bottom py-3">
+                            <h6 class="fw-bold mb-0 text-dark">Question Palette</h6>
+                        </div>
+
+                        <div class="card-body p-3">
+                            <!-- Palette Grid of numbers (1 to 10) -->
+                            <div class="palette-grid d-flex flex-wrap gap-2 mb-3" id="paletteContainer">
+                                {% for q in questions %}
+                                <button type="button" class="palette-btn status-not-visited" 
+                                        id="paletteBtn_{{ loop.index0 }}" 
+                                        data-q-index="{{ loop.index0 }}">
+                                    {{ loop.index }}
+                                </button>
+                                {% endfor %}
+                            </div>
+
+                            <hr class="my-3">
+
+                            <!-- Status Legend (Part 31) -->
+                            <div class="legend-grid small text-secondary d-flex flex-column gap-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="palette-btn status-not-visited" style="width: 20px; height: 20px; font-size: 0.65rem;"></span>
+                                    <span>Not Visited (Grey)</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="palette-btn status-current" style="width: 20px; height: 20px; font-size: 0.65rem;"></span>
+                                    <span>Current Question (Blue)</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="palette-btn status-answered" style="width: 20px; height: 20px; font-size: 0.65rem;"></span>
+                                    <span>Answered (Green)</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="palette-btn status-unanswered" style="width: 20px; height: 20px; font-size: 0.65rem;"></span>
+                                    <span>Visited, Unanswered (Orange)</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="palette-btn status-review" style="width: 20px; height: 20px; font-size: 0.65rem;"></span>
+                                    <span>Marked for Review (Purple)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer bg-light border-top p-3 text-center">
+                            <button type="button" class="btn btn-success w-100 fw-semibold py-2 shadow-sm" id="submitExamCardBtn">
+                                <i class="bi bi-send-check me-1"></i> Submit Examination
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+    <!-- Anti-Cheating Warning Modal (Part 20-25) -->
+    <div class="modal fade" id="antiCheatWarningModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title fw-bold" id="antiCheatModalTitle">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>Suspicious Activity Detected
+                    </h5>
+                </div>
+                <div class="modal-body py-4 text-center">
+                    <div class="display-6 text-danger mb-3">
+                        <i class="bi bi-shield-x"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2" id="warningTitle">Warning 1: Please remain on the examination page</h5>
+                    <p class="text-secondary small mb-3" id="warningDescription">
+                        Switching tabs, exiting fullscreen, or copying text violates examination integrity rules.
+                    </p>
+                    <div class="badge bg-danger-subtle text-danger px-3 py-2 fw-semibold" id="warningTallyBadge">
+                        Warning 1 of 3
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center bg-light">
+                    <button type="button" class="btn btn-danger px-4" id="resumeExamBtn" data-bs-dismiss="modal">
+                        I Understand & Return to Exam
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit Confirmation Modal (Part 16) -->
+    <div class="modal fade" id="submitConfirmModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold">Submit Examination?</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body py-4">
+                    <p class="text-muted small mb-3">Please review your question status before confirming your submission:</p>
+                    <div class="row text-center g-2 mb-4">
+                        <div class="col-4">
+                            <div class="p-2 bg-success-subtle text-success rounded-3">
+                                <div class="h4 fw-bold mb-0" id="summaryAnswered">0</div>
+                                <div class="small">Answered</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-2 bg-warning-subtle text-warning-emphasis rounded-3">
+                                <div class="h4 fw-bold mb-0" id="summaryUnanswered">0</div>
+                                <div class="small">Unanswered</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-2 bg-purple-subtle text-purple rounded-3" style="background-color: #ede9fe; color: #6d28d9;">
+                                <div class="h4 fw-bold mb-0" id="summaryReview">0</div>
+                                <div class="small">Review</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert alert-warning small mb-0">
+                        <i class="bi bi-info-circle me-1"></i> Once submitted, your answers cannot be altered.
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Continue Exam</button>
+                    <button type="button" class="btn btn-success fw-semibold" id="confirmFinalSubmitBtn">
+                        Confirm & Submit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Exam Engine & Anti-Cheat Scripts -->
+    <script>
+        const EXAM_CONFIG = {
+            totalQuestions: {{ questions|length }},
+            durationMinutes: {{ duration_minutes }},
+            attemptId: {{ attempt.id }},
+            logUrl: "{{ url_for('exam.log_cheating_event', attempt_id=attempt.id) }}"
+        };
+    </script>
+    <script src="{{ url_for('static', filename='js/exam.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/anti_cheat.js') }}"></script>
+</body>
+</html>

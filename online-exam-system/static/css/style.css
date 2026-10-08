@@ -1,0 +1,78 @@
+/* =========================================================
+   Online Examination System - Base Stylesheet
+   Academic Blue & White Theme (Part 8 & 31)
+   ========================================================= */
+
+:root {
+    --primary-color: #0d6efd;
+    --primary-dark: #0a58ca;
+    --primary-light: #e7f1ff;
+    --accent-warning: #ffc107;
+    --palette-grey: #6c757d;
+    --palette-blue: #0d6efd;
+    --palette-green: #198754;
+    --palette-orange: #fd7e14;
+    --palette-purple: #6f42c1;
+    --surface-bg: #f8fafc;
+    --border-color: #e2e8f0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #1e293b;
+    background-color: #f1f5f9;
+}
+
+.navbar {
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%) !important;
+}
+
+.navbar-brand {
+    letter-spacing: 0.5px;
+}
+
+.card {
+    border-color: #e2e8f0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Question Palette Status Colors (Part 31) */
+.palette-btn {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    border: 1px solid transparent;
+}
+
+.palette-btn.status-not-visited {
+    background-color: #e2e8f0;
+    color: #475569;
+    border-color: #cbd5e1;
+}
+
+.palette-btn.status-current {
+    background-color: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.35);
+}
+
+.palette-btn.status-answered {
+    background-color: #16a34a;
+    color: #ffffff;
+}
+
+.palette-btn.status-unanswered {
+    background-color: #ea580c;
+    color: #ffffff;
+}
+
+.palette-btn.status-review {
+    background-color: #7c3aed;
+    color: #ffffff;
+}
